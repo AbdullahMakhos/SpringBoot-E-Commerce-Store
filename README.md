@@ -29,7 +29,6 @@ A full-featured, minimalistic e-commerce web application built with **Spring Boo
 - **Frontend Interface**
   - Clean, responsive Thymeleaf templates
   - Custom CSS styling
-  - Dynamic content rendering
   - User-friendly navigation
 
 ## 🛠️ Technology Stack
