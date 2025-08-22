@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login Test</title>
+	<link rel="stylesheet" th:href="@{/css/login-page.css}">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <h2>Login</h2>
+    
+    <!-- Simple form posts to /login endpoint -->
+    <form method="post" action="/login-page">
+        <div>
+            <label>Username:</label>
+            <input type="text" name="username" required>
+        </div>
+        <div>
+            <label>Password:</label>
+            <input type="password" name="password" required>
+        </div>
+        <button type="submit">Login</button>
+    </form>
+
+    <!-- Display error message if login failed -->
+    <p th:if="${param.error}" style="color: red;">Invalid credentials</p>
+	
+	<p>Don't have an account?<a href="/signup-page">Sign up here</a></p>
+</body>
+</html>
