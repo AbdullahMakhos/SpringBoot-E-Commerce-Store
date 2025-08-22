@@ -34,9 +34,9 @@ A full-featured, minimalistic e-commerce web application built with **Spring Boo
 
 ## 🛠️ Technology Stack
 
-- **Backend:** Java 17+, Spring Boot 3.2, Spring Data JPA, Spring Security
+- **Backend:** Java 17+, Spring Boot, Spring Data JPA, Spring Security
 - **Database:** MySQL 8.0
-- **Frontend:** Thymeleaf, HTML5, CSS3, JavaScript (Vanilla)
+- **Frontend:** Thymeleaf, HTML, CSS
 - **Build Tool:** Maven
 - **Security:** BCrypt password encoding, session authentication
 
@@ -52,7 +52,7 @@ src/
 │   │   ├── service/        # Business logic
 │   │   └── dto/            # Data Transfer Objects
 │   ├── resources/
-│   │   ├── static/         # CSS, JS files
+│   │   ├── public/         # CSS
 │   │   ├── templates/      # Thymeleaf HTML files
 │   │   └── application.properties
 └── test/                   # Unit tests
