@@ -36,5 +36,8 @@
             </td>
         </tr>
     </table>
+	<div th:if="${products.empty}">
+	    <h2>The store is empty.</h2>
+	</div>
 </body>
 </html>
