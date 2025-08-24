@@ -143,7 +143,7 @@ public class MainService {
 	public void deleteUserById(Long id) {
 		Optional<User> user = userRepository.findById(id);
 		if(user.isPresent()) {
-			cartRepository.deleteById(cartRepository.findByUser(user.get()).getCartId());
+			cartRepository.delete(getOrCreateCartForUser(user.get()));
 			userRepository.deleteById(id);	
 		}else {
 			throw new UserNotFoundException("User Not Found With ID :" + id);
