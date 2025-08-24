@@ -7,8 +7,10 @@ import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +21,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.ecommerce.store.DTO.CartDTO;
 import com.ecommerce.store.DTO.CartItemDTO;
 import com.ecommerce.store.DTO.PurchaseDTO;
+import com.ecommerce.store.DTO.SignupRequest;
 import com.ecommerce.store.DTO.UserDTO;
 import com.ecommerce.store.model.Cart;
 import com.ecommerce.store.model.CartItem;
@@ -27,6 +30,7 @@ import com.ecommerce.store.model.User;
 import com.ecommerce.store.service.MainService;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 @Controller
 public class MainController {
@@ -55,25 +59,45 @@ public class MainController {
     
     //signup methods
     @GetMapping("/signup-page")
-    public String showSignupForm() {
-        return "signup-page"; // renders signup.html
+    public String showSignupForm(Model model) {
+        model.addAttribute("signupRequest", new SignupRequest());
+        return "signup-page"; 
     }
 
     @PostMapping("/signup-page")
-    public String processSignup(@RequestParam String username
-    ,@RequestParam String password,@RequestParam(required = false) String email
-    ,HttpSession session) {
-        
-        try {
-            User newUser = new User(username, password, email);
-            mainService.createUser(newUser); // This should hash the password
-            session.setAttribute("user", username);
-            return "redirect:/"; // Redirect to home-page on success
-            
-        } catch (Exception e) {
-            // Handle duplicate username etc.
-            return "redirect:/signup?error";
+    public String processSignup(@Valid SignupRequest signupRequest, 
+	   BindingResult bindingResult, 
+	   HttpSession session,
+	   Model model) { // model to pass errors
+
+        // Check for validation errors from @ in SignupRequest class
+        if (bindingResult.hasErrors()) {
+            // Add error messages to the model to display in Thymeleaf
+            model.addAttribute("org.springframework.validation.BindingResult.signupRequest", bindingResult);
+            model.addAttribute("signupRequest", signupRequest); 
+            return "signup-page"; // Return back to the form with errors
         }
+
+        // business logic errors (duplicate username/email)
+        if (mainService.usernameExists(signupRequest.getUsername())) {
+            model.addAttribute("usernameError", "Username already exists");
+            model.addAttribute("signupRequest", signupRequest);
+            return "signup-page";
+        }
+        
+        if (mainService.emailExists(signupRequest.getEmail())) {
+            model.addAttribute("emailError", "Email already registered");
+            model.addAttribute("signupRequest", signupRequest);
+            return "signup-page";
+        }
+
+        // If all validations pass, create the user
+        User newUser = new User(signupRequest.getUsername(), 
+                               signupRequest.getPassword(), 
+                               signupRequest.getEmail());
+        mainService.createUser(newUser);
+        session.setAttribute("user", signupRequest.getUsername());
+        return "redirect:/";
     }
     
     //login methods
@@ -226,7 +250,7 @@ public class MainController {
     }
     
     @PostMapping("/users")
-    public ResponseEntity<UserDTO> postUser(@RequestBody User user) {
+    public ResponseEntity<UserDTO> postUser(@Valid @RequestBody User user) {
     	User savedUser = mainService.postUser(user);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")

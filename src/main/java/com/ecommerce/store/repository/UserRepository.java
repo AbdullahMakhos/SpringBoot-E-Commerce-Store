@@ -10,4 +10,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // Basic CRUD operations are provided by JpaRepository
     // You can add custom query methods here
 	User findByUsername(String string);
+
+	User findByEmail(String email);
 }

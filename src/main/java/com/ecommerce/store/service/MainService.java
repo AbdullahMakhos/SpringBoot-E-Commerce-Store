@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import com.ecommerce.store.DTO.CartItemDTO;
 import com.ecommerce.store.customizedExceptionHandler.BadBodyRequestException;
@@ -54,6 +55,10 @@ public class MainService {
 	    return userRepository.save(user);
 	}
 	
+	public boolean validateSignUp(String username, String password, String email) {
+		return !emailExists(email) && !usernameExists(username);
+	}
+
 	//login methods
 	
 	public boolean validateLogin(String username, String plainPassword) {
@@ -145,6 +150,13 @@ public class MainService {
 		}
 	}
 	
+	public boolean usernameExists(String username) {
+		return userRepository.findByUsername(username) != null;
+	}
+	
+	public boolean emailExists(String email) {
+		return userRepository.findByEmail(email) != null;
+	}
 	//you can only change password
 	public User changePassword(Long id,User newPasswordUser) {
 		User existing = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException
@@ -215,9 +227,5 @@ public class MainService {
 	public void removeProductFromCart(Cart cart, Long productId) {
 	    cart.removeItemByProductId(productId);
 	    cartRepository.save(cart);
-	}
-
-
-
-	
+	}	
 }
